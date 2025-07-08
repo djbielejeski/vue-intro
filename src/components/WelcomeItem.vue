@@ -1,4 +1,4 @@
-<template tagName="">
+<template>
   <div class="item">
     <i>
       <slot name="icon"></slot>
@@ -41,10 +41,4 @@
     }
   }
 }
-
-
-
-
-
-
 </style>

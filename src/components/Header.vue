@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { RouterLink } from 'vue-router';
 </script>
 
@@ -16,6 +15,7 @@ import { RouterLink } from 'vue-router';
       </RouterLink>
       <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About</RouterLink>
+      <RouterLink to="/500-card-game">500 card game</RouterLink>
     </nav>
   </header>
 </template>
