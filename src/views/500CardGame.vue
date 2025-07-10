@@ -4,8 +4,9 @@ import { use500CardGameStore } from '@/stores/five-hundred-card-game.ts';
 import { storeToRefs } from 'pinia';
 
 const gameStore = use500CardGameStore();
-const { game, isStarted } = storeToRefs(gameStore);
-const { startOrRestartGame } = gameStore;
+const { player1, player1BidUI, player2, player3, player4, blind, players,  currentBid, allPossibleBids, allowedBids } = storeToRefs(gameStore);
+const { startOrRestartGame, placeBid } = gameStore;
+
 </script>
 
 <template>
@@ -19,26 +20,71 @@ const { startOrRestartGame } = gameStore;
         Start
       </button>
     </div>
-    <div class="game-container" v-if="game !== null">
+    <div class="game-container" v-if="player1 && player2 && player3 && player4">
       <div></div>
       <div class="h-cards top player-3">
-        <Card class="card" v-for="card of game.player3.cards" :key="`${card.suit}-${card.value}`" :card="card" />
+        <Card class="card" v-for="card of player3.cards" :key="`${card.suit}-${card.value}`" :card="card" />
       </div>
       <div></div>
       <div class="v-cards player-2">
-        <Card class="card" v-for="card of game.player2.cards" :key="`${card.suit}-${card.value}`" :card="card" />
+        <Card class="card" v-for="card of player2.cards" :key="`${card.suit}-${card.value}`" :card="card" />
       </div>
       <div class="play-area">
         <div class="blind">
-          <Card class="card" v-for="card of game.blind" :key="`${card.suit}-${card.value}`" :card="card" />
+          <Card class="card" v-for="card of blind" :key="`${card.suit}-${card.value}`" :card="card" />
         </div>
       </div>
       <div class="v-cards player-4">
-        <Card class="card" v-for="card of game.player4.cards" :key="`${card.suit}-${card.value}`" :card="card" />
+        <Card class="card" v-for="card of player4.cards" :key="`${card.suit}-${card.value}`" :card="card" />
       </div>
       <div></div>
-      <div class="h-cards bottom player-1">
-        <Card class="card" v-for="card of game.player1.cards" :key="`${card.suit}-${card.value}`" :card="card" />
+      <div class="player-1">
+        <div class="h-cards bottom">
+          <Card class="card" v-for="card of player1.cards" :key="`${card.suit}-${card.value}`" :card="card" :can-hover="true"/>
+        </div>
+        <div class="player-actions">
+          <template v-if="player1.bid === null">
+            <select v-model="player1BidUI">
+              <option disabled value="null">Please select bid</option>
+              <option v-for="bid of allPossibleBids"
+                      :value="bid"
+                      :key="`${bid.pointValue}`"
+                      :disabled="!allowedBids.includes(bid)">
+                <template v-if="bid.value === 'pass'">
+                  Pass
+                </template>
+                <template v-else>
+                  {{ bid.bidName }} ({{ bid.pointValue}})
+                </template>
+              </option>
+            </select>
+
+            <!--   -->
+            <button
+              type="button"
+              :disabled="!player1BidUI"
+              @click="placeBid({
+                bidLocation: player1.bidLocation,
+                bid: player1BidUI,
+              })">
+              Place bid
+            </button>
+          </template>
+          <div v-else>
+            You {{ player1.bid?.value === 'pass' ? 'passed' : 'bid ' + player1.bid?.bidName }}
+          </div>
+        </div>
+
+        <div class="debug-log">
+<code>
+<pre>
+Debug log
+---------------------------
+<template v-if="player1BidUI">player1BidUI: {{ player1BidUI.bidName }} ({{ player1BidUI.pointValue}})</template>
+<template v-if="currentBid">currentBid: {{ currentBid.bidName }} ({{ currentBid.pointValue}})</template>
+</pre>
+</code>
+        </div>
       </div>
       <div></div>
     </div>
@@ -97,23 +143,11 @@ const { startOrRestartGame } = gameStore;
     // Temp - Remove after cards get overlayed correctly
     overflow-y: auto;
 
-    .card {
-      box-shadow: 1px 1px 4px var(--color-border);
-      transition: margin 250ms ease-in-out;
-    }
-
     .h-cards {
       justify-self: center;
       display: flex;
       flex-direction: row;
       gap: 8px;
-
-      &.bottom {
-        .card:hover {
-          margin-top: -55px;
-        }
-      }
-
 
       .card:not(:first-child) {
         margin-left: -36px;
@@ -134,6 +168,22 @@ const { startOrRestartGame } = gameStore;
         display: flex;
         flex-direction: row;
         gap: 8px;
+      }
+    }
+
+    .player-1 {
+      .player-actions {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
+        select {
+          height: 25px;
+          border-color: var(--color-border);
+        }
       }
     }
   }

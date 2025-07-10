@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { Card } from '../shared/models/card.model.ts';
-const { card } = defineProps({
-  card: Card,
+import { CardModel } from '../shared/models/card.model.ts';
+const { card, canHover } = withDefaults(defineProps<{
+  card: CardModel;
+  canHover?: boolean;
+}>(), {
+  canHover: false
 });
 </script>
 
 <template>
-  <div class="card-container">
+  <div class="card-container"
+        :class="{ 'can-hover': canHover }">
     <img class="card-image"
          v-bind:src="`/src/assets/cards/${card.imageName}`"
          v-bind:alt="card.cardName"
@@ -25,7 +29,36 @@ const { card } = defineProps({
     height / width = 1.534136546184739;
   */
   .card-container {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+
+    $container-height: 110px;
     width: 72px;
-    height: 110px;
+    height: $container-height;
+
+    .card-image {
+
+      box-shadow: 2px 2px 4px var(--color-border);
+    }
+
+    $hover-height: 28px;
+    &.can-hover {
+      height: calc($container-height + $hover-height);
+
+      .card-image {
+        transition: bottom 250ms ease-in;
+        position: absolute;
+        bottom: 0;
+      }
+
+      // Trigger the hover on the parent container
+      &:hover {
+        .card-image {
+          transition: bottom 100ms ease-out;
+          bottom: $hover-height;
+        }
+      }
+    }
   }
 </style>

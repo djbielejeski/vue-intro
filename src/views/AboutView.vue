@@ -3,7 +3,7 @@ import { useCounterStore } from '@/stores/counter';
 import { storeToRefs } from 'pinia';
 
 const counterStore = useCounterStore();
-const { count, doubleCount, disabled, hasCount, countData } = storeToRefs(counterStore);
+const { count, doubleCount, disabled, hasCount, apiData } = storeToRefs(counterStore);
 const { increment, decrement, getData, clearData } = counterStore;
 
 </script>
@@ -32,7 +32,7 @@ const { increment, decrement, getData, clearData } = counterStore;
 
   <div class="actions">
     <button type="button"
-            :disabled="countData.length === 0"
+            :disabled="apiData.length === 0"
             @click="clearData">
       Clear Data
     </button>
@@ -52,10 +52,10 @@ const { increment, decrement, getData, clearData } = counterStore;
       </tr>
       </thead>
       <tbody>
-      <tr v-if="countData.length === 0">
+      <tr v-if="apiData.length === 0">
         <td colspan="100">No data loaded</td>
       </tr>
-      <tr v-for="item of countData" :key="item.guid">
+      <tr v-for="item of apiData" :key="item.guid">
         <td>
           {{ item.guid }}
         </td>

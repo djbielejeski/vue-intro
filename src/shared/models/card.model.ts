@@ -1,13 +1,12 @@
-import { computed, ref } from 'vue';
 import type { CardSuit, CardValue } from '../types/five-hundred-card-game.types.ts';
 
-export class Card {
-  readonly suit: Ref<CardSuit>;
-  readonly value: Ref<CardValue>;
+export class CardModel {
+  suit: CardSuit;
+  value: CardValue;
 
-  readonly cardName = computed<string>(() => {
-    const value = this.value.value;
-    const suit = this.suit.value;
+  get cardName(): string {
+    const value = this.value;
+    const suit = this.suit;
 
     if (value && suit) {
       const uppercaseSuit = suit.charAt(0).toUpperCase() + suit.slice(1);
@@ -37,11 +36,11 @@ export class Card {
     } else {
       return '';
     }
-  });
+  };
 
-  readonly imageName = computed<string>(() => {
-    const value = this.value.value;
-    const suit = this.suit.value;
+  get imageName(): string {
+    const value = this.value;
+    const suit = this.suit;
 
     if (value) {
       if (value === 17) {
@@ -52,37 +51,37 @@ export class Card {
     } else {
       return '';
     }
-  })
+  };
 
   constructor(params: {
     suit: CardSuit;
     value: CardValue;
   }) {
-    this.suit = ref(params.suit);
-    this.value = ref(params.value);
+    this.suit = params.suit;
+    this.value = params.value;
   }
 
   convertToTrumpSuit(trumpSuit: CardSuit) {
     // Check for joker
     if (this.value === 17) {
-      this.suit.value = trumpSuit;
+      this.suit = trumpSuit;
     }
 
 
     if (this.value === 11) {
 
       // Check for the right bauer (jack)
-      if (this.suit.value === trumpSuit) {
-        this.value.value = 16;
+      if (this.suit === trumpSuit) {
+        this.value = 16;
       }
 
       // check for the left bauer (jack)
-      if ((trumpSuit === 'spades' && this.suit.value === 'clubs') ||
-        (trumpSuit === 'clubs' && this.suit.value === 'spades') ||
-        (trumpSuit === 'diamonds' && this.suit.value === 'hearts') ||
-        (trumpSuit === 'hearts' && this.suit.value === 'diamonds')) {
-        this.value.value = 15;
-        this.suit.value = trumpSuit;
+      if ((trumpSuit === 'spades' && this.suit === 'clubs') ||
+        (trumpSuit === 'clubs' && this.suit === 'spades') ||
+        (trumpSuit === 'diamonds' && this.suit === 'hearts') ||
+        (trumpSuit === 'hearts' && this.suit === 'diamonds')) {
+        this.value = 15;
+        this.suit = trumpSuit;
       }
     }
   }

@@ -1,13 +1,12 @@
-import { computed, ref } from 'vue';
 import type { BidSuit, BidValue } from '../types/five-hundred-card-game.types.ts';
 
-export class Bid {
-  readonly suit: Ref<BidSuit>;
-  readonly value: Ref<BidValue>;
+export class BidModel {
+  readonly suit: BidSuit;
+  readonly value: BidValue;
 
-  readonly pointValue = computed(() => {
+  get pointValue(): number {
     let baseValue = 0;
-    switch(this.suit.value) {
+    switch(this.suit) {
       case 'spades': {
         baseValue = 40;
         break;
@@ -27,7 +26,7 @@ export class Bid {
     }
 
     let valueAdd = 0;
-    switch (this.value.value) {
+    switch (this.value) {
       case 6: {
         valueAdd += 0;
         break;
@@ -52,13 +51,28 @@ export class Bid {
 
 
     return baseValue + valueAdd;
-  });
+  };
+
+  // Note: It does fire whenever the store updates.
+  // - TODO - Figure out a pattern to make this reactive.
+  // Maybe move this to constructor - but thats gross.
+  get bidName(): string {
+    const value = this.value;
+    const suit = this.suit;
+
+    if (value === 'pass') {
+      return 'pass';
+    } else {
+      const uppercaseSuit = suit.charAt(0).toUpperCase() + suit.slice(1);
+      return `${ value } of ${ uppercaseSuit }`;
+    }
+  };
 
   constructor(params: {
     suit: BidSuit;
     value: BidValue;
   }) {
-    this.suit = ref(params.suit);
-    this.value = ref(params.value);
+    this.suit = params.suit;
+    this.value = params.value;
   }
 }
