@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { CardModel } from '../shared/models/card.model.ts';
-const { card, canHover } = withDefaults(defineProps<{
+const { card, canHover = false } = defineProps<{
   card: CardModel;
   canHover?: boolean;
-}>(), {
-  canHover: false
-});
+}>();
 </script>
 
 <template>
